@@ -1,7 +1,11 @@
+#pragma once
+
 #include <iostream>
 #include <list>
+#include <fstream>
 #include "b_plus_tree.h"
 #include "global.h"
+#include "customer_info.h"
 using namespace std;
 class flight_time_node
 {
@@ -17,13 +21,19 @@ public:
 	void insert_flight_info();
 	flight_time_node* find_node_by_data(string data);//寻找日期所在的节点
 	void search_flight_info();//购票时查看航班信息
+	void get_info_from_file();//从文件中获取已存航班信息，仅debug使用
 };
 int main()
 {
 	make_info_map();//初始化map
-	flight_information test;
-	test.insert_flight_info();
-	test.search_flight_info();
+	/*flight_information test;
+	//test.insert_flight_info();
+	test.get_info_from_file();
+	test.search_flight_info();*/
+	customer_info customers;
+	customers.login();
+	/*customers.create_account();
+	customers.search_customer_info(100000);*/
 }
 flight_time_node::flight_time_node(string time)
 {
@@ -75,7 +85,7 @@ void flight_information::insert_flight_info()
 	cin>>price_normal;
 	cout<<"请输入VIP票价:";
 	cin>>price_vip;
-//时间格式：2020/03/18/13:28，存储格式：2020/03/18
+	//时间格式：2020/03/18/13:28，存储格式：2020/03/18
 	flight_time_node* target = find_node_by_data(departure_start_time.substr(0,10));
 	if(!target)
 	{
@@ -130,5 +140,56 @@ void flight_information::search_flight_info()
     	cout<<"到达时间:"<<(*iter)->destination_arrive_time<<endl;
     	cout<<endl;
   	}
+}
+void flight_information::get_info_from_file()
+{
+	ifstream flight_info;
+    flight_info.open("flight_info.in", ios::in);
+    while (!flight_info.eof())
+	{
+	    string flight_number;
+		string company_name;//航空公司名称
+		string departure;//航班起飞地
+		string destination;//航班降落地
+		string stop = "";//航班经停地点
+		string departure_start_time;//出发地起飞时间
+		string stop_arrive_time = "";//到达经停地时间
+		string stop_start_time = "";//由经停地起飞时间
+		string destination_arrive_time;//目的地到达时间
+		int remain_number;//剩余票数
+		float price_normal;//普通票价
+		float price_vip;//公务舱票价
+		int has_stop = 0;
 
+		flight_info>>flight_number;
+		flight_info>>company_name;
+		flight_info>>departure;
+		flight_info>>destination;
+		flight_info>>departure_start_time;
+		flight_info>>has_stop;
+		if(has_stop == 1)
+		{
+			flight_info>>stop;
+			flight_info>>stop_arrive_time;
+			flight_info>>stop_start_time;
+		}
+		flight_info>>destination_arrive_time;
+		flight_info>>remain_number;
+		flight_info>>price_normal;
+		flight_info>>price_vip;
+
+		flight_time_node* target = find_node_by_data(departure_start_time.substr(0,10));
+		if(!target)
+		{
+			target = new flight_time_node(departure_start_time.substr(0,10));
+			flight_time_chain.push_back(target);
+		}
+		flight_information_node* information_node;
+		if(has_stop == 1)
+			information_node = new flight_information_node(flight_number,company_name,departure,destination,stop,departure_start_time,stop_arrive_time,stop_start_time,destination_arrive_time,remain_number,price_normal,price_vip);
+		else
+			information_node = new flight_information_node(flight_number,company_name,departure,destination,departure_start_time,destination_arrive_time,remain_number,price_normal,price_vip);
+		target->tree->insert_flight_info(information_node);
+	}
+	flight_info.close();
 }

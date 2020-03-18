@@ -1,59 +1,30 @@
 #pragma once
 
-#include "b_plus_tree.h"
+#include "b_plus_tree_customer.h"
 #include <queue>
-flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip)
+void customer_info_node::load_data(unsigned int account)
 {
-	this->flight_number = flight_number;
-	this->company_name = company_name;
-	this->departure = departure;
-	this->destination = destination;
-	this->stop = stop;
-	this->departure_start_time = departure_start_time;
-	this->stop_arrive_time = stop_arrive_time;
-	this->stop_start_time = stop_start_time;
-	this->destination_arrive_time = destination_arrive_time;
-	this->remain_number = remain_number;
-	this->price_normal = price_normal;
-	this->price_vip = price_vip;
-	islater = 0;
+	this->account = account;
 }
-flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string departure_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip)
-{
-	this->flight_number = flight_number;
-	this->company_name = company_name;
-	this->departure = departure;
-	this->destination = destination;
-	this->departure_start_time = departure_start_time;
-	this->destination_arrive_time = destination_arrive_time;
-	this->remain_number = remain_number;
-	this->price_normal = price_normal;
-	this->price_vip = price_vip;
-
-	stop = "";
-	stop_arrive_time = "";
-	stop_start_time = "";
-	islater = 0;
-}
-node::node(int n)
+node_customer::node_customer(int n)
 {
 	level = n;
 	index = new int[level-1]();
-	point = new node*[level];
+	point = new node_customer*[level];
 	for(int m=0;m<n;m++)
 		point[m] = NULL;
 	position = 0;
 	right = NULL;
-	info_list = new list<flight_information_node*>[level-1];
+	info_list = new customer_info_node*[level-1];
 }
-b_plus_tree::b_plus_tree(int n)
+b_plus_tree_customer::b_plus_tree_customer(int n)
 {
 	level = n;
 	root = NULL;
 }
-node **b_plus_tree::find_position(int data,node *target,node *father)
+node_customer **b_plus_tree_customer::find_position(int data,node_customer *target,node_customer *father)
 {
-	node **target_father = new node*[2];
+	node_customer **target_father = new node_customer*[2];
 	target_father[0] = target;
 	target_father[1] = father;
 	int m;
@@ -72,27 +43,27 @@ node **b_plus_tree::find_position(int data,node *target,node *father)
 		return target_father;
 	}
 }
-void b_plus_tree::split_node(node*& target,node*&father,int data)
+void b_plus_tree_customer::split_node(node_customer*& target,node_customer*&father,int data)
 {
 	int last_data = data;//多出的那个数
-	node *up=father,*right;
+	node_customer *up=father,*right;
 	if(target->index[target->position-1] > data)//进行排序，将最大值提出至last_data
 	{
 		last_data = target->index[target->position-1];
 		insert_sort(data,target->index,level-2);
 	}
-	right = new node(level);
+	right = new node_customer(level);
 	right->right = target->right;//横向连入结点
 	target->right = right;
 	if(!up)
-		up = new node(level);//说明为根结点分裂
+		up = new node_customer(level);//说明为根结点分裂
 	
 	int mid = level/2;
 	if(up->position == level-1)//处理非叶结点分裂
 	{
 		split_up_node(up,target->index[mid]);
-		node *up_right = up->right;
-		node *temp = up->point[0];
+		node_customer *up_right = up->right;
+		node_customer *temp = up->point[0];
 		for(int m=0;m<=level/2;m++)//处理叶子节点指针
 		{
 			up->point[m] = temp;
@@ -117,7 +88,7 @@ void b_plus_tree::split_node(node*& target,node*&father,int data)
 		else
 		{
 			int i=0;
-			node *temp=up->point[0];
+			node_customer *temp=up->point[0];
 			for(int m=0;m<=up->position;m++)
 			{
 				up->point[i] = temp;
@@ -135,19 +106,19 @@ void b_plus_tree::split_node(node*& target,node*&father,int data)
 	right->index[right->position++] = last_data;
 	target->position = level/2;//维护position
 }
-void b_plus_tree::insert(int data)
+void b_plus_tree_customer::insert(int data)
 {
 	if(!root)
 	{
-		root = new node(level);
+		root = new node_customer(level);
 		int position = root->position;
 		root->index[position] = data;
 		root->position++;
 		return;
 	}
-	node **target_father = find_position(data,root,NULL);
-	node *target = target_father[0];
-	node *father = target_father[1];
+	node_customer **target_father = find_position(data,root,NULL);
+	node_customer *target = target_father[0];
+	node_customer *father = target_father[1];
 	int exist = is_exist(data,target->index,target->position);
 	if(exist != -1)
 	{
@@ -165,7 +136,7 @@ void b_plus_tree::insert(int data)
 		split_node(target,father,data);
 	}
 }
-void b_plus_tree::insert_sort(int data,int *&index,int number)
+void b_plus_tree_customer::insert_sort(int data,int *&index,int number)
 {
 	int m;
 	for(m=number-1;m>=0;m--)
@@ -179,7 +150,7 @@ void b_plus_tree::insert_sort(int data,int *&index,int number)
 	}
 	index[m+1] = data;
 }
-int b_plus_tree::is_exist(int data,int *&index,int number)
+int b_plus_tree_customer::is_exist(int data,int *&index,int number)
 {
 	for(int m=0;m<number;m++)
 	{
@@ -188,11 +159,11 @@ int b_plus_tree::is_exist(int data,int *&index,int number)
 	}
 	return -1;
 }
-void b_plus_tree::run_down()
+void b_plus_tree_customer::run_down()
 {
 	if(!root)
 		return;
-	node *temp = root;
+	node_customer *temp = root;
 	for(;temp->point[0];temp=temp->point[0]);//寻找叶结点始端
 	for(;temp;temp=temp->right)
 	{
@@ -202,7 +173,7 @@ void b_plus_tree::run_down()
 		}
 	}
 }
-node *b_plus_tree::find_father(int data,node *target,node *father)
+node_customer *b_plus_tree_customer::find_father(int data,node_customer *target,node_customer *father)
 {
 	int m;
 	for(m=0;m<target->position;m++)
@@ -218,29 +189,29 @@ node *b_plus_tree::find_father(int data,node *target,node *father)
 	}
 	
 }
-void b_plus_tree::split_up_node(node *target,int data)
+void b_plus_tree_customer::split_up_node(node_customer *target,int data)
 {
 	int last_data = data;//多出的那个数
-	node *father = find_father(target->index[0],root,NULL);
-	node *up=father,*right;
+	node_customer *father = find_father(target->index[0],root,NULL);
+	node_customer *up=father,*right;
 	if(target->index[target->position-1] > data)//进行排序，将最大值提出至last_data
 	{
 		last_data = target->index[target->position-1];
 		insert_sort(data,target->index,level-2);
 	}
-	right = new node(level);
+	right = new node_customer(level);
 	right->right = target->right;
 	target->right = right;
 	if(!up)
-		up = new node(level);//说明为根结点分裂
+		up = new node_customer(level);//说明为根结点分裂
 
 	int mid = level/2;
 	if(up->position == level-1)
 	{
 		split_up_node(up,target->index[mid]);
-		node *up_right = up->right;
+		node_customer *up_right = up->right;
 		int i = 0;
-		node *temp = up->point[0];
+		node_customer *temp = up->point[0];
 		for(int m=0;m<=level/2;m++)//处理叶子节点指针
 		{
 			up->point[m] = temp;
@@ -264,7 +235,7 @@ void b_plus_tree::split_up_node(node *target,int data)
 	else
 	{
 		int i=0;
-		node *temp=up->point[0];
+		node_customer *temp=up->point[0];
 		for(int m=0;m<=up->position;m++)
 		{
 			up->point[i] = temp;
@@ -282,10 +253,10 @@ void b_plus_tree::split_up_node(node *target,int data)
 	right->index[right->position++] = last_data;
 	target->position = level/2;
 }
-void b_plus_tree::overTree()
+void b_plus_tree_customer::overTree()
 {
-	node *temp;
-	queue<node*> store_node;
+	node_customer *temp;
+	queue<node_customer*> store_node;
 	store_node.push(root);
 	while(store_node.size())
 	{
@@ -307,11 +278,11 @@ void b_plus_tree::overTree()
 		store_node.pop();
 	}
 }
-void b_plus_tree::delete_data(int data)
+void b_plus_tree_customer::delete_data(int data)
 {
-	node **target_father = find_position(data,root,NULL);
-	node *target = target_father[0];
-	node *father = target_father[1];
+	node_customer **target_father = find_position(data,root,NULL);
+	node_customer *target = target_father[0];
+	node_customer *father = target_father[1];
 	int m;
 	for(m=0;m<target->position;m++)
 	{
@@ -329,8 +300,8 @@ void b_plus_tree::delete_data(int data)
 		delete_index(target->index,m,target->position);
 		return;
 	}
-	node *pre = get_pre_node(target,father);
-	node *brother = pre;
+	node_customer *pre = get_pre_node(target,father);
+	node_customer *brother = pre;
 	if(pre && pre->position>limit || !pre && target->right->position>limit)
 	{//兄弟节点数目足够
 		if(!pre)
@@ -362,7 +333,7 @@ void b_plus_tree::delete_data(int data)
 		if(!pre)
 		{
 			together_index(target->index,target->right->index,target->position,target->right->position);
-			node *temp = target->right;
+			node_customer *temp = target->right;
 			target->right = temp->right;
 			delete temp;
 		}
@@ -385,7 +356,7 @@ void b_plus_tree::delete_data(int data)
 	}
 
 }
-void b_plus_tree::delete_index(int*& index,int position,int &number)
+void b_plus_tree_customer::delete_index(int*& index,int position,int &number)
 {
 	int m;
 	for(m=position;m<number-1;m++)
@@ -395,10 +366,10 @@ void b_plus_tree::delete_index(int*& index,int position,int &number)
 	index[m] = 0;
 	number--;
 }
-node* b_plus_tree::get_pre_node(node*target,node *father)
+node_customer* b_plus_tree_customer::get_pre_node(node_customer*target,node_customer *father)
 {
-	node *temp = father->point[0];
-	node *pre = NULL;
+	node_customer *temp = father->point[0];
+	node_customer *pre = NULL;
 	for(;temp;temp=temp->right)
 	{
 		if(temp == target)
@@ -406,7 +377,7 @@ node* b_plus_tree::get_pre_node(node*target,node *father)
 		pre = temp;
 	}
 }
-void b_plus_tree::sort_index(int *&index,int number,int position)
+void b_plus_tree_customer::sort_index(int *&index,int number,int position)
 {
 	int data = index[position];
 	if(position-1>=0 && data<index[position-1])
@@ -438,7 +409,7 @@ void b_plus_tree::sort_index(int *&index,int number,int position)
 		index[m-1] = data;
 	}
 }
-void b_plus_tree::together_index(int*& pre,int *&bac,int &number_pre,int &number_bac)
+void b_plus_tree_customer::together_index(int*& pre,int *&bac,int &number_pre,int &number_bac)
 {
 	for(int m=0;m<number_bac;m++)
 	{
@@ -447,7 +418,7 @@ void b_plus_tree::together_index(int*& pre,int *&bac,int &number_pre,int &number
 	number_pre += number_bac;
 	number_bac = 0;
 }
-void b_plus_tree::delete_father_node(node *&target,int position)
+void b_plus_tree_customer::delete_father_node(node_customer *&target,int position)
 {
 	if(target == root && target->position==1)
 	{
@@ -470,9 +441,9 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 	}
 	else
 	{
-		node *father = find_father(target->index[0],root,NULL);
-		node *pre = get_pre_node(target,father);
-		node *right = target->right;
+		node_customer *father = find_father(target->index[0],root,NULL);
+		node_customer *pre = get_pre_node(target,father);
+		node_customer *right = target->right;
 		if(pre)
 		{
 			int father_position = find_father_position(pre,target,father);
@@ -564,7 +535,7 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 		}
 	}
 }
-int b_plus_tree::find_father_position(node *pre,node *target,node *father)
+int b_plus_tree_customer::find_father_position(node_customer *pre,node_customer *target,node_customer *father)
 {
 	int position;
 	for(position=0;position<father->position;position++)
@@ -574,7 +545,7 @@ int b_plus_tree::find_father_position(node *pre,node *target,node *father)
 	}
 	return position;
 }	
-void b_plus_tree::move_point(node *target,int position)
+void b_plus_tree_customer::move_point(node_customer *target,int position)
 {
 	if(!target)
 		return;
@@ -585,29 +556,16 @@ void b_plus_tree::move_point(node *target,int position)
 	}
 	target->point[m] = NULL;
 }
-void b_plus_tree::insert_flight_info(flight_information_node*info)
+void b_plus_tree_customer::insert_customer_info(customer_info_node *new_customer)
 {
-	string index = info->departure+"/"+info->destination;
-	int data = info_map[index];
-	insert(data);
-	node **target_father = find_position(data,root,NULL);
-	node *target = target_father[0];
+	unsigned int account = new_customer->account;
+	insert(account);
+	node_customer *target = find_position(account,root,NULL)[0];
 	int m;
 	for(m=0;m<target->position;m++)
 	{
-		if(target->index[m] == data)
+		if(target->index[m] == account)
 			break;
 	}
-	target->info_list[m].push_back(info);
-}
-list<flight_information_node*> b_plus_tree:: find_info_list(int data)
-{
-	node *target = find_position(data,root,NULL)[0];
-	int m;
-	for(m=0;m<target->position;m++)
-	{
-		if(target->index[m] == data)
-			break;
-	}
-	return target->info_list[m];
+	target->info_list[m] = new_customer;
 }
