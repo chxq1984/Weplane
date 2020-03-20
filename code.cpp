@@ -362,3 +362,7 @@ void password::dele_log_in()
 	store_message.clear();
 	out.close();
 }
+string password::ret_name()//返回用户名
+{
+	return name;
+}

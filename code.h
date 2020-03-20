@@ -25,7 +25,7 @@ public:
 };
 class password
 {
-	string name,code;
+	string code,name;
 	vector<type_code> store;
 	vector<type_message> store_message;
 public:
@@ -43,4 +43,5 @@ public:
 	void refresh_log_in();//刷新登录信息
 	void add_log_in(const string &temname);//增加登录信息
 	void dele_log_in();//删除登录信息
+	string ret_name();//返回用户名
 };

@@ -7,3 +7,4 @@ void make_info_map()
 	info_map["上海/福州"] = 2;
 }
 unsigned int account = 100000;
+unsigned int login_account;

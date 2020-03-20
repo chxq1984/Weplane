@@ -2,7 +2,7 @@
 
 #include "b_plus_tree.h"
 #include <queue>
-flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip)
+flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int remain_number_normal,int remain_number_vip,float price_normal,float price_vip)
 {
 	this->flight_number = flight_number;
 	this->company_name = company_name;
@@ -13,12 +13,13 @@ flight_information_node::flight_information_node(string flight_number,string com
 	this->stop_arrive_time = stop_arrive_time;
 	this->stop_start_time = stop_start_time;
 	this->destination_arrive_time = destination_arrive_time;
-	this->remain_number = remain_number;
+	this->remain_number_normal = remain_number_normal;
+	this->remain_number_vip = remain_number_vip;
 	this->price_normal = price_normal;
 	this->price_vip = price_vip;
 	islater = 0;
 }
-flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string departure_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip)
+flight_information_node::flight_information_node(string flight_number,string company_name,string departure,string destination,string departure_start_time,string destination_arrive_time,int remain_number_normal,int remain_number_vip,float price_normal,float price_vip)
 {
 	this->flight_number = flight_number;
 	this->company_name = company_name;
@@ -26,7 +27,8 @@ flight_information_node::flight_information_node(string flight_number,string com
 	this->destination = destination;
 	this->departure_start_time = departure_start_time;
 	this->destination_arrive_time = destination_arrive_time;
-	this->remain_number = remain_number;
+	this->remain_number_normal = remain_number_normal;
+	this->remain_number_vip = remain_number_vip;
 	this->price_normal = price_normal;
 	this->price_vip = price_vip;
 
@@ -600,7 +602,7 @@ void b_plus_tree::insert_flight_info(flight_information_node*info)
 	}
 	target->info_list[m].push_back(info);
 }
-list<flight_information_node*> b_plus_tree:: find_info_list(int data)
+list<flight_information_node*>& b_plus_tree:: find_info_list(int data)
 {
 	node *target = find_position(data,root,NULL)[0];
 	int m;

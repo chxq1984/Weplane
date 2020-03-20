@@ -2,6 +2,19 @@
 
 #include "b_plus_tree_customer.h"
 #include <queue>
+void have_buy_info::set_info(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int ticket_type)
+{
+	this->flight_number = flight_number;
+	this->company_name = company_name;
+	this->departure = departure;
+	this->destination = destination;
+	this->stop = stop;
+	this->departure_start_time = departure_start_time;
+	this->stop_arrive_time = stop_arrive_time;
+	this->stop_start_time = stop_start_time;
+	this->destination_arrive_time = destination_arrive_time;
+	this->ticket_type = ticket_type;
+}
 void customer_info_node::load_data(unsigned int account)
 {
 	this->account = account;

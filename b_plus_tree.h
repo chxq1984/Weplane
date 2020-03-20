@@ -4,13 +4,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <list>
+#include <queue>
 #include "global.h"
 using namespace std;
 class flight_information_node
 {
 public:
-	flight_information_node(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip);
-	flight_information_node(string flight_number,string company_name,string departure,string destination,string departure_start_time,string destination_arrive_time,int remain_number,float price_normal,float price_vip);
+	flight_information_node(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int remain_number_normal,int remain_numer_vip,float price_normal,float price_vip);
+	flight_information_node(string flight_number,string company_name,string departure,string destination,string departure_start_time,string destination_arrive_time,int remain_number_normal,int remain_numer_vip,float price_normal,float price_vip);
 	string flight_number;//航班号
 	string company_name;//航空公司名称
 	string departure;//航班起飞地
@@ -20,11 +21,13 @@ public:
 	string stop_arrive_time;//到达经停地时间
 	string stop_start_time;//由经停地起飞时间
 	string destination_arrive_time;//目的地到达时间
-	int remain_number;//剩余票数
+	int remain_number_normal;//剩余普通票数
+	int remain_number_vip;//剩余商务舱票数
 	int islater;//是否延误
 	float price_normal;//普通票价
 	float price_vip;//公务舱票价
-	list<string> buying_customer;//存储购票者的账号
+	list<unsigned int> buying_customer;//存储购票者的账号
+	queue<unsigned int> appointment;//存储预约购票者的账号
 };
 class node
 {
@@ -44,7 +47,7 @@ public:
 	int level;//定义b+树的阶数
 	node *root;
 	void insert_flight_info(flight_information_node*info);//插入航班信息
-	list<flight_information_node*> find_info_list(int data);//根据data查找对应的list
+	list<flight_information_node*>& find_info_list(int data);//根据data查找对应的list
 	void insert(int data);
 	node **find_position(int data,node *target,node *father);//寻找要插入的位置，返回比data小的上一个node的位置，返回值[0]:target,[1]:father
 	void split_node(node*& target,node*&father,int data);//将target结点分裂

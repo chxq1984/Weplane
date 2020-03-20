@@ -5,13 +5,31 @@
 #include <ctime>
 #include <list>
 #include "global.h"
+#include <list>
 using namespace std;
+class have_buy_info//存储乘客所买的票的信息
+{
+public:
+	string flight_number;//航班号
+	string company_name;//航空公司名称
+	string departure;//航班起飞地
+	string destination;//航班降落地
+	string stop;//航班经停地点
+	string departure_start_time;//出发地起飞时间
+	string stop_arrive_time;//到达经停地时间
+	string stop_start_time;//由经停地起飞时间
+	string destination_arrive_time;//目的地到达时间
+	int ticket_type;//1:客舱  2:商务舱
+	void set_info(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int ticket_type);
+};
 class customer_info_node
 {
 public:
-	unsigned int account;
+	unsigned int account;//账号，用unsigned int 保存更容易查找
+	list<have_buy_info*> ticket_info_list;//已购票信息
 	void load_data(unsigned int account);
 };
+
 class node_customer
 {
 public:
