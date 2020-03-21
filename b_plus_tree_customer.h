@@ -20,7 +20,8 @@ public:
 	string stop_start_time;//由经停地起飞时间
 	string destination_arrive_time;//目的地到达时间
 	int ticket_type;//1:客舱  2:商务舱
-	void set_info(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int ticket_type);
+	float price;//票价
+	void set_info(string flight_number,string company_name,string departure,string destination,string stop,string departure_start_time,string stop_arrive_time,string stop_start_time,string destination_arrive_time,int ticket_type,float price);
 };
 class customer_info_node
 {

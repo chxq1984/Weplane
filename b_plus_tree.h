@@ -27,7 +27,8 @@ public:
 	float price_normal;//普通票价
 	float price_vip;//公务舱票价
 	list<unsigned int> buying_customer;//存储购票者的账号
-	queue<unsigned int> appointment;//存储预约购票者的账号
+	queue<unsigned int> appointment_normal;//存储预约购票者的账号:客舱
+	queue<unsigned int> appointment_vip;//存储预约购票者的账号：商务舱
 };
 class node
 {
