@@ -6,6 +6,7 @@
 #include "b_plus_tree.h"
 #include "global.h"
 #include "customer_info.h"
+#include "file.h"
 using namespace std;
 class flight_time_node
 {
@@ -17,16 +18,20 @@ public:
 class flight_information
 {
 public:
+	file_manage* file_manager;
 	customer_info customers;//用户信息管理类
 	list<flight_time_node*> flight_time_chain;
+	list<flight_information_node*>delay_list;//延误航班信息列表
 	void insert_flight_info();
 	flight_time_node* find_node_by_data(string data);//寻找日期所在的节点
 	void get_info_from_file();//从文件中获取已存航班信息，仅debug使用
 	void buy_ticket();//购票
 	void solve_buying_info(flight_information_node* flight_info);//处理购票时的信息更新
 	void cancel_ticket();//退票
-	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);
+	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);//此函数也可用于返回航班信息节点
 	//判断是否已经起飞，注：待改进！！改进方向：飞机可能延迟起飞导致起飞时间对不上
+	void delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute);//飞机延迟
+	void notice_flight();//通知飞机延误/取消
 };
 int main()
 {
@@ -34,11 +39,20 @@ int main()
 	flight_information test;
 	test.get_info_from_file();
 	test.customers.get_info_from_file();
-	//test.customers.create_account();
+	
+	/*string data="100000";
+	test.file_manager = new notice_file();
+	test.file_manager->delete_file(1,data);*/
+	//test.buy_ticket();
 	//test.customers.login();
-	//test.customers.get_info_from_file();
 	test.buy_ticket();
-	test.cancel_ticket();
+	string departure_start_time="2020/03/18/20:00";
+	string departure="北京";
+	string destination="广州";
+	string flight_number="1111";
+	test.delay_flight(departure_start_time,departure,destination,flight_number,30);
+	test.notice_flight();
+	//test.cancel_ticket();
 	/*
 	//test.insert_flight_info();
 	test.get_info_from_file();
@@ -366,4 +380,74 @@ flight_information_node* flight_information::check_whether_fly(string departure_
 			return (*iter);
 	}
 	return NULL;
+}
+void flight_information::delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute)
+{
+	flight_information_node *target = check_whether_fly(departure_start_time,departure,destination,flight_number);
+	target->islater = delay_minute;
+	delay_list.push_back(target);//加入列表
+	file_manager = new notice_file();
+	file_manager->write_file(target,1);//写入文件
+	delete file_manager;
+}
+void flight_information::notice_flight()
+{
+	file_manager = new notice_file();
+	queue<string> notice_list = file_manager->search(to_string(login_account),2);
+	while(notice_list.size())
+	{
+		string data = notice_list.front();
+		notice_list.pop();
+		queue<string> notice = file_manager->split(data," ");
+		string type = notice.front();//1：延误  2：取消
+		notice.pop();
+		notice.pop();
+		string flight_number = notice.front();
+		notice.pop();
+		string departure_start_time = notice.front();
+		notice.pop();
+		string departure = notice.front();
+		notice.pop();
+		string destination = notice.front();
+		notice.pop();
+		string later_time = notice.front();
+		if(type=="1")//延误
+		{
+			file_manager->delete_file(1,to_string(login_account));
+			cout<<"您所乘坐的"<<flight_number<<"次航班预计延误"<<later_time<<"分钟"<<endl;
+		}
+		else if(type=="2")
+		{
+			file_manager->delete_file(2,to_string(login_account));
+			cout<<"您所乘坐的"<<flight_number<<"次航班已取消"<<endl;
+		}
+		int key = global_transform(departure,destination);
+		flight_time_node* target_time_node = find_node_by_data(departure_start_time.substr(0,10));
+		if(!target_time_node)
+		{
+			cout<<"暂无当日推荐航班,如需退票请联系地面工作人员"<<endl;
+			return;
+		}
+		list<flight_information_node*> flight_info_list = target_time_node->tree->find_info_list(key);
+		if(!flight_info_list.size())
+		{
+			cout<<"暂无当日推荐航班,如需退票请联系地面工作人员"<<endl;
+			return;
+		}
+		cout<<"推荐换乘航班:"<<endl;
+		list<flight_information_node*>::iterator iter;
+		int number = 1;
+		for(iter=flight_info_list.begin();iter!=flight_info_list.end();iter++)
+		{
+			if(!(*iter)->islater)
+			{
+				//没有延误
+				cout<<number++<<":"<<endl;
+				cout<<(*iter)->company_name<<" "<<(*iter)->flight_number<<"次航班"<<endl;
+				cout<<"起飞时间:"<<(*iter)->departure_start_time<<endl;
+				cout<<"到达时间:"<<(*iter)->destination_arrive_time<<endl;
+				cout<<endl;
+			}
+		}//还缺少用户确认换票功能
+	}
 }
