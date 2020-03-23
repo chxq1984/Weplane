@@ -26,12 +26,15 @@ public:
 	flight_time_node* find_node_by_data(string data);//寻找日期所在的节点
 	void get_info_from_file();//从文件中获取已存航班信息，仅debug使用
 	void buy_ticket();//购票
-	void solve_buying_info(flight_information_node* flight_info);//处理购票时的信息更新
+	void solve_buying_info(flight_information_node* flight_info,int position_type);//处理购票时的信息更新,type:1:普通购票,2:换票
 	void cancel_ticket();//退票
 	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);//此函数也可用于返回航班信息节点
 	//判断是否已经起飞，注：待改进！！改进方向：飞机可能延迟起飞导致起飞时间对不上
 	void delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute);//飞机延迟
 	void notice_flight();//通知飞机延误/取消
+	void solve_change_ticket(flight_information_node*flight_node);//更换机票更新信息
+	void cancel_flight(string departure_start_time,string departure,string destination,string flight_number);//飞机取消
+	void plane_fly(string departure_start_time,string departure,string destination,string flight_number);//飞机起飞信息更新
 };
 int main()
 {
@@ -45,13 +48,13 @@ int main()
 	test.file_manager->delete_file(1,data);*/
 	//test.buy_ticket();
 	//test.customers.login();
-	test.buy_ticket();
+	//test.buy_ticket();
 	string departure_start_time="2020/03/18/20:00";
 	string departure="北京";
 	string destination="广州";
 	string flight_number="1111";
-	test.delay_flight(departure_start_time,departure,destination,flight_number,30);
-	test.notice_flight();
+	test.plane_fly(departure_start_time,departure,destination,flight_number);
+	//test.notice_flight();
 	//test.cancel_ticket();
 	/*
 	//test.insert_flight_info();
@@ -237,17 +240,20 @@ void flight_information::buy_ticket()
 		if(i == target)
 			break;
 	}
-	solve_buying_info(*iter);
+	solve_buying_info(*iter,1);
 
 }
-void flight_information::solve_buying_info(flight_information_node* flight_info)
+void flight_information::solve_buying_info(flight_information_node* flight_info,int position_type)
 {
 	customer_info_node* customer = customers.search_customer_info(login_account);
 	cout<<"客舱剩余票数:"<<flight_info->remain_number_normal<<endl;
 	cout<<"客舱票价:"<<flight_info->price_normal<<endl;
 	cout<<"商务舱剩余票数:"<<flight_info->remain_number_vip<<endl;
 	cout<<"商务舱票价:"<<flight_info->price_vip<<endl;
-	cout<<"请输入您所想要购买的类型:\n客舱:1  商务舱:2"<<endl;
+	if(position_type == 1)
+		cout<<"请输入您所想要购买的类型:\n客舱:1  商务舱:2"<<endl;
+	else if(position_type == 2)
+		cout<<"请输入您所想要换乘的类型:\n客舱:1  商务舱:2"<<endl;
 	int type;
 	cin>>type;
 	int have_buy = 0;//判断是否已经购票
@@ -265,7 +271,10 @@ void flight_information::solve_buying_info(flight_information_node* flight_info)
 
 			flight_info->remain_number_normal -= 1;
 			flight_info->buying_customer.push_back(login_account);
-			cout<<"购票成功！"<<endl;
+			if(position_type == 1)
+				cout<<"购票成功！"<<endl;
+			else if(position_type == 2)
+				cout<<"换票成功！"<<endl;
 			have_buy = 1;
 		}
 	}
@@ -281,7 +290,10 @@ void flight_information::solve_buying_info(flight_information_node* flight_info)
 		{
 			flight_info->remain_number_vip -= 1;
 			flight_info->buying_customer.push_back(login_account);
-			cout<<"购票成功！"<<endl;
+			if(position_type == 1)
+				cout<<"购票成功！"<<endl;
+			else if(position_type == 2)
+				cout<<"换票成功！"<<endl;
 			have_buy = 1;
 		}
 	}
@@ -448,6 +460,86 @@ void flight_information::notice_flight()
 				cout<<"到达时间:"<<(*iter)->destination_arrive_time<<endl;
 				cout<<endl;
 			}
-		}//还缺少用户确认换票功能
+		}
+		cout<<"请输入您所选中的换乘航班(若选择不换乘则输入0):"<<endl;
+		int target_number;
+		cin>>target_number;
+		if(!target_number)
+			return;
+		for(number=1,iter=flight_info_list.begin();iter!=flight_info_list.end();iter++,number++)
+		{
+			if(number == target_number)
+			{
+				solve_buying_info((*iter),2);//换票选择
+				for(iter=flight_info_list.begin();iter!=flight_info_list.end();iter++)
+				{
+					if((*iter)->flight_number == flight_number && (*iter)->departure_start_time == departure_start_time)
+					{
+						//cout<<"换票信息更新中..."<<endl;
+						solve_change_ticket((*iter));//处理换票信息更新
+						break;
+					}
+				}
+				break;
+			}
+		}
 	}
+}
+//首先删除飞机航班节点中的乘客信息，再删除乘客购买了此票的信息，再添加新票的信息，原票数量增加
+void flight_information::solve_change_ticket(flight_information_node*flight_node)
+{
+	int ticket_type;
+	customer_info_node*customer_info = customers.tree->search_customer_info(login_account);
+	if(!customer_info)
+	{
+		cout<<"查询不到乘客信息!"<<endl;
+		return;
+	}
+	list<have_buy_info*>& have_buy_list = customer_info->ticket_info_list;
+	list<have_buy_info*>::iterator iter;
+	for(iter=have_buy_list.begin();iter!=have_buy_list.end();iter++)
+	{
+		if((*iter)->flight_number==flight_node->flight_number&&(*iter)->departure_start_time==flight_node->departure_start_time)
+		{
+			ticket_type = (*iter)->ticket_type;
+			break;
+		}
+	}
+	customer_info->ticket_info_list.remove((*iter));//删除用户购买此票的记录
+	//cout<<"已删除原购票记录"<<endl;
+	if(ticket_type == 1)//增加票数
+	{
+		flight_node->remain_number_normal++;
+	}
+	else if(ticket_type == 2)
+	{
+		flight_node->remain_number_vip++;
+	}
+	//cout<<"已增加"<<ticket_type<<"票数"<<endl;
+	flight_node->buying_customer.remove(login_account);//删除用户信息
+	//cout<<"已删除用户信息"<<endl;
+}
+void flight_information::cancel_flight(string departure_start_time,string departure,string destination,string flight_number)
+{
+	flight_information_node *target = check_whether_fly(departure_start_time,departure,destination,flight_number);
+	file_manager = new notice_file();
+	file_manager->write_file(target,2);//写入文件
+	delete file_manager;
+	flight_time_node* target_day = find_node_by_data(departure_start_time.substr(0,10));
+	int data = global_transform(departure,destination);
+	list<flight_information_node*>flight_info_list = target_day->tree->find_info_list(data);
+	flight_info_list.remove(target);//删除此航班信息
+}
+void flight_information::plane_fly(string departure_start_time,string departure,string destination,string flight_number)
+{
+	flight_information_node *target = check_whether_fly(departure_start_time,departure,destination,flight_number);
+	flight_time_node* target_day = find_node_by_data(departure_start_time.substr(0,10));
+	int data = global_transform(departure,destination);
+	list<flight_information_node*>flight_info_list = target_day->tree->find_info_list(data);
+	flight_info_list.remove(target);//删除此航班信息
+	if(target->islater)
+	{
+		delay_list.remove(target);//删除延误航班内的信息
+	}
+	cout<<"由"<<departure<<"飞往"<<destination<<"的"<<flight_number<<"次航班已经起飞"<<endl;
 }

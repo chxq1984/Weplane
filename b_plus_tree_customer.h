@@ -48,6 +48,7 @@ public:
 	b_plus_tree_customer(int n);
 	int level;//定义b+树的阶数
 	node_customer *root;
+	customer_info_node* search_customer_info(unsigned int account);
 	void insert_customer_info(customer_info_node *new_customer);
 	void insert(int data);
 	node_customer **find_position(int data,node_customer *target,node_customer *father);//寻找要插入的位置，返回比data小的上一个node的位置，返回值[0]:target,[1]:father
