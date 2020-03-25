@@ -553,3 +553,73 @@ void flight_information::plane_fly(string departure_start_time,string departure,
 	}
 	cout<<"由"<<departure<<"飞往"<<destination<<"的"<<flight_number<<"次航班已经起飞"<<endl;
 }
+void flight_information::show_ticket_info(flight_information_node *target)
+{
+	int is_has_stop = 0;
+	cout<<"航班号:"<<target->flight_number<<endl;
+	cout<<"航空公司:"<<target->company_name<<endl;
+	cout<<"起始地:"<<target->departure<<endl;
+	if(target->stop != "")
+	{
+		is_has_stop = 1;
+		cout<<"经停地:"<<target->stop;
+	}
+	cout<<"目的地:"<<target->destination<<endl;
+	cout<<"起飞时间:"<<target->departure_start_time<<endl;
+	if(is_has_stop)
+	{
+		cout<<"到达"<<target->stop<<"时间:"<<target->stop_arrive_time<<endl;
+		cout<<target->stop<<"起飞时间:"<<target->stop_start_time<<endl;		
+	}
+	cout<<"到达目的地时间:"<<target->destination_arrive_time<<endl;
+	cout<<"客舱:"<<endl;
+	cout<<"余票:"<<target->remain_number_normal<<"  价格:"<<target->price_normal<<"元"<<endl;
+	cout<<"商务舱:"<<endl;
+	cout<<"余票:"<<target->remain_number_vip<<"  价格:"<<target->price_vip<<endl;
+	if(target->islater)
+		cout<<"预计延误"<<target->islater<<"分钟"<<endl;
+}
+void flight_information::search_ticket_by_city(string departure,string destination)
+{
+	int data = global_transform(departure,destination);
+	list<flight_time_node*>::iterator iter = flight_time_chain.begin();
+	for(;iter!=flight_time_chain.end();iter++)
+	{
+		list<flight_information_node*>data_list = (*iter)->tree->find_info_list(data);
+		list<flight_information_node*>::iterator iter_data_list;
+		for(iter_data_list=data_list.begin();iter_data_list!=data_list.end();iter_data_list++)
+		{
+
+			show_ticket_info(*iter_data_list);
+			cout<<endl;
+		}
+	}
+}
+void flight_information::search_ticket_by_flight_number(string flight_number)
+{//底层遍历
+	list<flight_time_node*>::iterator iter = flight_time_chain.begin();
+	for(;iter!=flight_time_chain.end();iter++)
+	{
+		node *root = (*iter)->tree->root;
+		if(!root)
+			return;
+		node *temp = root;
+		for(;temp->point[0];temp=temp->point[0]);//寻找叶结点始端
+		for(;temp;temp=temp->right)
+		{
+			for(int m=0;m<temp->position;m++)
+			{
+				list<flight_information_node*>flight_list = temp->info_list[m];
+				list<flight_information_node*>::iterator iter_flight;
+				for(iter_flight=flight_list.begin();iter_flight!=flight_list.end();iter_flight++)
+				{
+					if((*iter_flight)->flight_number == flight_number)
+					{
+						show_ticket_info(*iter_flight);
+						cout<<endl;
+					}
+				}
+			}
+		}
+	}
+}

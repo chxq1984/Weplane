@@ -12,7 +12,7 @@ using namespace std;
 class flight_time_node
 {
 public:
-	string departure_time;//èµ·é£æ—¶é—´
+	string departure_time;//Æğ·ÉÊ±¼ä
 	b_plus_tree *tree;
 	flight_time_node(string time);
 };
@@ -20,20 +20,23 @@ class flight_information
 {
 public:
 	file_manage* file_manager;
-	customer_info customers;//ç”¨æˆ·ä¿¡æ¯ç®¡ç†ç±»
+	customer_info customers;//ÓÃ»§ĞÅÏ¢¹ÜÀíÀà
 	list<flight_time_node*> flight_time_chain;
-	list<flight_information_node*>delay_list;//å»¶è¯¯èˆªç­ä¿¡æ¯åˆ—è¡¨
+	list<flight_information_node*>delay_list;//ÑÓÎóº½°àĞÅÏ¢ÁĞ±í
 	void insert_flight_info();
-	flight_time_node* find_node_by_data(string data);//å¯»æ‰¾æ—¥æœŸæ‰€åœ¨çš„èŠ‚ç‚¹
-	void get_info_from_file();//ä»æ–‡ä»¶ä¸­è·å–å·²å­˜èˆªç­ä¿¡æ¯ï¼Œä»…debugä½¿ç”¨
-	void buy_ticket();//è´­ç¥¨
-	void solve_buying_info(flight_information_node* flight_info,int position_type);//å¤„ç†è´­ç¥¨æ—¶çš„ä¿¡æ¯æ›´æ–°,type:1:æ™®é€šè´­ç¥¨,2:æ¢ç¥¨
-	void cancel_ticket();//é€€ç¥¨
-	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);//æ­¤å‡½æ•°ä¹Ÿå¯ç”¨äºè¿”å›èˆªç­ä¿¡æ¯èŠ‚ç‚¹
-	//åˆ¤æ–­æ˜¯å¦å·²ç»èµ·é£ï¼Œæ³¨ï¼šå¾…æ”¹è¿›ï¼ï¼æ”¹è¿›æ–¹å‘ï¼šé£æœºå¯èƒ½å»¶è¿Ÿèµ·é£å¯¼è‡´èµ·é£æ—¶é—´å¯¹ä¸ä¸Š
-	void delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute);//é£æœºå»¶è¿Ÿ
-	void notice_flight();//é€šçŸ¥é£æœºå»¶è¯¯/å–æ¶ˆ
-	void solve_change_ticket(flight_information_node*flight_node);//æ›´æ¢æœºç¥¨æ›´æ–°ä¿¡æ¯
-	void cancel_flight(string departure_start_time,string departure,string destination,string flight_number);//é£æœºå–æ¶ˆ
-	void plane_fly(string departure_start_time,string departure,string destination,string flight_number);//é£æœºèµ·é£ä¿¡æ¯æ›´æ–°
+	flight_time_node* find_node_by_data(string data);//Ñ°ÕÒÈÕÆÚËùÔÚµÄ½Úµã
+	void get_info_from_file();//´ÓÎÄ¼şÖĞ»ñÈ¡ÒÑ´æº½°àĞÅÏ¢£¬½ödebugÊ¹ÓÃ
+	void buy_ticket();//¹ºÆ±
+	void solve_buying_info(flight_information_node* flight_info,int position_type);//´¦Àí¹ºÆ±Ê±µÄĞÅÏ¢¸üĞÂ,type:1:ÆÕÍ¨¹ºÆ±,2:»»Æ±
+	void cancel_ticket();//ÍËÆ±
+	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);//´Ëº¯ÊıÒ²¿ÉÓÃÓÚ·µ»Øº½°àĞÅÏ¢½Úµã
+	//ÅĞ¶ÏÊÇ·ñÒÑ¾­Æğ·É£¬×¢£º´ı¸Ä½ø£¡£¡¸Ä½ø·½Ïò£º·É»ú¿ÉÄÜÑÓ³ÙÆğ·Éµ¼ÖÂÆğ·ÉÊ±¼ä¶Ô²»ÉÏ
+	void delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute);//·É»úÑÓ³Ù
+	void notice_flight();//Í¨Öª·É»úÑÓÎó/È¡Ïû
+	void solve_change_ticket(flight_information_node*flight_node);//¸ü»»»úÆ±¸üĞÂĞÅÏ¢
+	void cancel_flight(string departure_start_time,string departure,string destination,string flight_number);//·É»úÈ¡Ïû
+	void plane_fly(string departure_start_time,string departure,string destination,string flight_number);//·É»úÆğ·ÉĞÅÏ¢¸üĞÂ
+	void search_ticket_by_city(string departure,string destination);
+	void search_ticket_by_flight_number(string flight_number);
+	void show_ticket_info(flight_information_node *target);
 };

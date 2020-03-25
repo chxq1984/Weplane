@@ -76,26 +76,26 @@ node **b_plus_tree::find_position(int data,node *target,node *father)
 }
 void b_plus_tree::split_node(node*& target,node*&father,int data)
 {
-	int last_data = data;//å¤šå‡ºçš„é‚£ä¸ªæ•°
+	int last_data = data;//¶à³öµÄÄÇ¸öÊı
 	node *up=father,*right;
-	if(target->index[target->position-1] > data)//è¿›è¡Œæ’åºï¼Œå°†æœ€å¤§å€¼æå‡ºè‡³last_data
+	if(target->index[target->position-1] > data)//½øĞĞÅÅĞò£¬½«×î´óÖµÌá³öÖÁlast_data
 	{
 		last_data = target->index[target->position-1];
 		insert_sort(data,target->index,level-2);
 	}
 	right = new node(level);
-	right->right = target->right;//æ¨ªå‘è¿å…¥ç»“ç‚¹
+	right->right = target->right;//ºáÏòÁ¬Èë½áµã
 	target->right = right;
 	if(!up)
-		up = new node(level);//è¯´æ˜ä¸ºæ ¹ç»“ç‚¹åˆ†è£‚
+		up = new node(level);//ËµÃ÷Îª¸ù½áµã·ÖÁÑ
 	
 	int mid = level/2;
-	if(up->position == level-1)//å¤„ç†éå¶ç»“ç‚¹åˆ†è£‚
+	if(up->position == level-1)//´¦Àí·ÇÒ¶½áµã·ÖÁÑ
 	{
 		split_up_node(up,target->index[mid]);
 		node *up_right = up->right;
 		node *temp = up->point[0];
-		for(int m=0;m<=level/2;m++)//å¤„ç†å¶å­èŠ‚ç‚¹æŒ‡é’ˆ
+		for(int m=0;m<=level/2;m++)//´¦ÀíÒ¶×Ó½ÚµãÖ¸Õë
 		{
 			up->point[m] = temp;
 			temp = temp->right;
@@ -109,8 +109,8 @@ void b_plus_tree::split_node(node*& target,node*&father,int data)
 	}
 	else
 	{
-		insert_sort(target->index[mid],up->index,up->position++);//å‘upä¸­æ’å…¥æ•°æ®å¹¶æ’åº
-		if(up->position == 1)//æ ‘é•¿é«˜
+		insert_sort(target->index[mid],up->index,up->position++);//ÏòupÖĞ²åÈëÊı¾İ²¢ÅÅĞò
+		if(up->position == 1)//Ê÷³¤¸ß
 		{
 			up->point[0] = target;
 			up->point[1] = right;
@@ -127,15 +127,15 @@ void b_plus_tree::split_node(node*& target,node*&father,int data)
 				temp = temp->right;
 			}
 
-		}//ä¸Šè¿°ä»£ç åŠŸèƒ½ï¼šå°†çˆ¶ç»“ç‚¹æŒ‡å‘å­ç»“ç‚¹çš„æŒ‡é’ˆé‡ç½®
+		}//ÉÏÊö´úÂë¹¦ÄÜ£º½«¸¸½áµãÖ¸Ïò×Ó½áµãµÄÖ¸ÕëÖØÖÃ
 	}
-	for(int m=0;m<level-mid-1;m++)//å°†targetååŠéƒ¨åˆ†è½¬è‡³right
+	for(int m=0;m<level-mid-1;m++)//½«targetºó°ë²¿·Ö×ªÖÁright
 	{
 		right->index[right->position++] = target->index[mid+m];
-		target->index[mid+m] = 0;//è¿˜åŸä¸ºé»˜è®¤å€¼0
+		target->index[mid+m] = 0;//»¹Ô­ÎªÄ¬ÈÏÖµ0
 	}
 	right->index[right->position++] = last_data;
-	target->position = level/2;//ç»´æŠ¤position
+	target->position = level/2;//Î¬»¤position
 }
 void b_plus_tree::insert(int data)
 {
@@ -153,16 +153,16 @@ void b_plus_tree::insert(int data)
 	int exist = is_exist(data,target->index,target->position);
 	if(exist != -1)
 	{
-		//æ’å…¥å€¼ç›¸åŒï¼Œè‹¥è¦æ“ä½œåœ¨æ­¤å¤„è¿›è¡Œå³å¯
+		//²åÈëÖµÏàÍ¬£¬ÈôÒª²Ù×÷ÔÚ´Ë´¦½øĞĞ¼´¿É
 		return;
 	}
-	if(target -> position != level-1)//æœªæ»¡,ç›´æ¥æ’å…¥å³å¯
+	if(target -> position != level-1)//Î´Âú,Ö±½Ó²åÈë¼´¿É
 	{
 		insert_sort(data,target->index,target->position);
 		target->position++;
 		return;
 	}
-	else//å·²æ»¡ï¼Œéœ€è¦åˆ†è£‚
+	else//ÒÑÂú£¬ĞèÒª·ÖÁÑ
 	{
 		split_node(target,father,data);
 	}
@@ -195,7 +195,7 @@ void b_plus_tree::run_down()
 	if(!root)
 		return;
 	node *temp = root;
-	for(;temp->point[0];temp=temp->point[0]);//å¯»æ‰¾å¶ç»“ç‚¹å§‹ç«¯
+	for(;temp->point[0];temp=temp->point[0]);//Ñ°ÕÒÒ¶½áµãÊ¼¶Ë
 	for(;temp;temp=temp->right)
 	{
 		for(int m=0;m<temp->position;m++)
@@ -222,10 +222,10 @@ node *b_plus_tree::find_father(int data,node *target,node *father)
 }
 void b_plus_tree::split_up_node(node *target,int data)
 {
-	int last_data = data;//å¤šå‡ºçš„é‚£ä¸ªæ•°
+	int last_data = data;//¶à³öµÄÄÇ¸öÊı
 	node *father = find_father(target->index[0],root,NULL);
 	node *up=father,*right;
-	if(target->index[target->position-1] > data)//è¿›è¡Œæ’åºï¼Œå°†æœ€å¤§å€¼æå‡ºè‡³last_data
+	if(target->index[target->position-1] > data)//½øĞĞÅÅĞò£¬½«×î´óÖµÌá³öÖÁlast_data
 	{
 		last_data = target->index[target->position-1];
 		insert_sort(data,target->index,level-2);
@@ -234,7 +234,7 @@ void b_plus_tree::split_up_node(node *target,int data)
 	right->right = target->right;
 	target->right = right;
 	if(!up)
-		up = new node(level);//è¯´æ˜ä¸ºæ ¹ç»“ç‚¹åˆ†è£‚
+		up = new node(level);//ËµÃ÷Îª¸ù½áµã·ÖÁÑ
 
 	int mid = level/2;
 	if(up->position == level-1)
@@ -243,7 +243,7 @@ void b_plus_tree::split_up_node(node *target,int data)
 		node *up_right = up->right;
 		int i = 0;
 		node *temp = up->point[0];
-		for(int m=0;m<=level/2;m++)//å¤„ç†å¶å­èŠ‚ç‚¹æŒ‡é’ˆ
+		for(int m=0;m<=level/2;m++)//´¦ÀíÒ¶×Ó½ÚµãÖ¸Õë
 		{
 			up->point[m] = temp;
 			temp = temp->right;
@@ -256,8 +256,8 @@ void b_plus_tree::split_up_node(node *target,int data)
 	}
 	else
 	{
-	insert_sort(target->index[mid],up->index,up->position++);//å‘upä¸­æ’å…¥æ•°æ®å¹¶æ’åº
-	if(up->position == 1)//æ ‘é•¿é«˜
+	insert_sort(target->index[mid],up->index,up->position++);//ÏòupÖĞ²åÈëÊı¾İ²¢ÅÅĞò
+	if(up->position == 1)//Ê÷³¤¸ß
 	{
 		up->point[0] = target;
 		up->point[1] = right;
@@ -334,11 +334,11 @@ void b_plus_tree::delete_data(int data)
 	node *pre = get_pre_node(target,father);
 	node *brother = pre;
 	if(pre && pre->position>limit || !pre && target->right->position>limit)
-	{//å…„å¼ŸèŠ‚ç‚¹æ•°ç›®è¶³å¤Ÿ
+	{//ĞÖµÜ½ÚµãÊıÄ¿×ã¹»
 		if(!pre)
 		{
-			//æ— å‰ç½®èŠ‚ç‚¹
-			brother = target->right;//ä»¥ä¸‹ä¸€èŠ‚ç‚¹ä¸ºç›®æ ‡
+			//ÎŞÇ°ÖÃ½Úµã
+			brother = target->right;//ÒÔÏÂÒ»½ÚµãÎªÄ¿±ê
 			int borrow = brother->index[0];
 			delete_index(brother->index,0,brother->position);
 			target->index[m] = borrow;
@@ -359,7 +359,7 @@ void b_plus_tree::delete_data(int data)
 	}
 	else
 	{
-		//åˆå¹¶å…„å¼ŸèŠ‚ç‚¹
+		//ºÏ²¢ĞÖµÜ½Úµã
 		delete_index(target->index,m,target->position);
 		if(!pre)
 		{
@@ -466,8 +466,8 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 	}
 	if(target->position>level/2)
 	{
-		//å…ƒç´ æ•°è¶³å¤Ÿï¼Œåˆ é™¤å…ƒç´ åä¸éœ€è¦åˆå¹¶
-		delete_index(target->index,position,target->position);//åˆ é™¤å…ƒç´ 
+		//ÔªËØÊı×ã¹»£¬É¾³ıÔªËØºó²»ĞèÒªºÏ²¢
+		delete_index(target->index,position,target->position);//É¾³ıÔªËØ
 		move_point(target,position);
 	}
 	else
@@ -478,16 +478,16 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 		if(pre)
 		{
 			int father_position = find_father_position(pre,target,father);
-			//å­˜åœ¨preèŠ‚ç‚¹
+			//´æÔÚpre½Úµã
 			if(pre->position>level/2)
 			{
-				//preèŠ‚ç‚¹å¯Œè£•,è½¬ç§»å…„å¼ŸèŠ‚ç‚¹
+				//pre½Úµã¸»Ô£,×ªÒÆĞÖµÜ½Úµã
 				target->index[position] = father->index[father_position];
 				sort_index(target->index,target->position,position);
 				father->index[father_position] = pre->index[pre->position-1];
 				pre->index[pre->position-1] = 0;
 				pre->position--;
-				/*node *temp = pre->point[pre->position+1];//å¤„ç†targetçš„æŒ‡é’ˆ
+				/*node *temp = pre->point[pre->position+1];//´¦ÀítargetµÄÖ¸Õë
 				for(int m=0;m<=target->position;m++)
 				{
 					target->point[m] = temp;
@@ -501,19 +501,19 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 			}
 			else
 			{
-				//preèŠ‚ç‚¹ä¸å¯Œè£•ï¼Œéœ€è¦åˆå¹¶
+				//pre½Úµã²»¸»Ô££¬ĞèÒªºÏ²¢
 				delete_index(target->index,position,target->position);
 				int father_index = father->index[father_position];
 				delete_father_node(father,father_position);
 				pre->right = target->right;
-				//move_point(father,father_position);//ç§»åŠ¨fatherçš„æŒ‡é’ˆ
+				//move_point(father,father_position);//ÒÆ¶¯fatherµÄÖ¸Õë
 				move_point(target,position);
-				for(int m=0;m<=target->position;m++)//ç§»åŠ¨preæŒ‡é’ˆ
+				for(int m=0;m<=target->position;m++)//ÒÆ¶¯preÖ¸Õë
 				{
 					pre->point[pre->position+1+m] = target->point[m];
 				}
 				pre->index[pre->position++] = father_index;
-				for(int m=0;m<target->position;m++)//å°†targetçš„å€¼å¤åˆ¶åˆ°preä¸­
+				for(int m=0;m<target->position;m++)//½«targetµÄÖµ¸´ÖÆµ½preÖĞ
 				{
 					pre->index[pre->position++] = target->index[m];
 					target->index[m] = 0;
@@ -524,11 +524,11 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 		}
 		else
 		{
-			//ä¸å­˜åœ¨preèŠ‚ç‚¹ï¼Œéœ€è¦ç”¨rightèŠ‚ç‚¹ä»£æ›¿
+			//²»´æÔÚpre½Úµã£¬ĞèÒªÓÃright½Úµã´úÌæ
 			int father_position = find_father_position(target,right,father);
 			if(right->position>level/2)
 			{
-				//rightèŠ‚ç‚¹å¯Œè£•,è½¬ç§»å…„å¼ŸèŠ‚ç‚¹
+				//right½Úµã¸»Ô£,×ªÒÆĞÖµÜ½Úµã
 				target->index[position] = father->index[father_position];
 				sort_index(target->index,target->position,position);
 				father->index[father_position] = right->index[0];
@@ -539,23 +539,23 @@ void b_plus_tree::delete_father_node(node *&target,int position)
 				target->point[target->position] = right->point[0];
 				delete_index(right->index,0,right->position);
 				/*move_point(target,position);*/
-				move_point(right,-1);//rightæŒ‡é’ˆå‰ç§»
+				move_point(right,-1);//rightÖ¸ÕëÇ°ÒÆ
 			}
 			else
 			{
-				//rightèŠ‚ç‚¹ä¸å¯Œè£•ï¼Œéœ€è¦åˆå¹¶
+				//right½Úµã²»¸»Ô££¬ĞèÒªºÏ²¢
 				delete_index(target->index,position,target->position);
 				int father_index = father->index[father_position];
 				delete_father_node(father,father_position);
 				target->right = right->right;
-				//move_point(father,father_position);//ç§»åŠ¨fatherçš„æŒ‡é’ˆ
+				//move_point(father,father_position);//ÒÆ¶¯fatherµÄÖ¸Õë
 				move_point(target,position);
-				for(int m=0;m<=right->position;m++)//ç§»åŠ¨targetçš„æŒ‡é’ˆ
+				for(int m=0;m<=right->position;m++)//ÒÆ¶¯targetµÄÖ¸Õë
 				{
 					target->point[target->position+1+m] = right->point[m];
 				}
 				target->index[target->position++] = father_index;
-				for(int m=0;m<right->position;m++)//å°†targetçš„å€¼å¤åˆ¶åˆ°preä¸­
+				for(int m=0;m<right->position;m++)//½«targetµÄÖµ¸´ÖÆµ½preÖĞ
 				{
 					target->index[target->position++] = right->index[m];
 					right->index[m] = 0;

@@ -52,7 +52,7 @@ void UI::main_window()
 		system("cls");
 		char juge_object = choose_login();
 		int is_exit_inner,is_exit_outer;
-		is_exit_outer=is_exit_outer=0;
+		is_exit_inner=is_exit_outer=0;
 		if(juge_object == '1')//乘客
 		{
 			char is_out = customer_login_choose();
@@ -68,6 +68,9 @@ void UI::main_window()
 						break;
 					case '2':
 						cancel_ticket();//退票
+						break;
+					case '3':
+						search_flight_info();//票务查询
 						break;
 					case 'q':
 						is_exit_inner = 1;
@@ -115,6 +118,8 @@ void UI::login_customer()
 {
 	system("cls");
 	manager.customers.login();
+	system("cls");
+	manager.notice_flight();
 }
 char UI::customer_login_choose()
 {
@@ -154,7 +159,10 @@ char UI::choose_buy_cancel()
 	cout<<"1.买票"<<endl<<endl;
 	for(int m=0;m<main_width/2+7;m++)
 		cout<<" ";
-	cout<<"2.退票"<<endl;
+	cout<<"2.退票"<<endl<<endl;
+	for(int m=0;m<main_width/2+5;m++)
+		cout<<" ";
+	cout<<"3.票务查询"<<endl<<endl;
 	footer();
 	char choose;
 	choose = _getch();
@@ -257,4 +265,51 @@ void UI::fly_flight()
 	cout<<"请输入航班号:";
 	cin>>flight_number;
 	manager.cancel_flight(departure_start_time,departure,destination,flight_number);
+}
+void UI::search_flight_info()
+{
+	system("cls");
+	header();
+	for(int m=0;m<main_width/2-4;m++)
+		cout<<" ";
+	cout<<"1.根据起始地/目的地查询"<<endl<<endl;
+	for(int m=0;m<main_width/2-2;m++)
+		cout<<" ";
+	cout<<"2.根据航班号查询"<<endl<<endl;
+	footer();
+	char choose;
+	choose = _getch();
+	switch(choose)
+	{
+		case '1':
+			search_flight_info_by_city();
+			break;
+		case '2':
+			search_flight_info_by_flight_number();
+			break;
+		case 'q':
+			break;
+	}
+}
+void UI::search_flight_info_by_city()
+{
+	string departure,destination;
+	system("cls");
+	cout<<"请输入出发地:"<<endl;
+	cin>>departure;
+	cout<<"请输入目的地:"<<endl;
+	cin>>destination;
+	system("cls");
+	manager.search_ticket_by_city(departure,destination);
+	_getch();
+}
+void UI::search_flight_info_by_flight_number()
+{
+	string flight_number;
+	system("cls");
+	cout<<"请输入航班号:"<<endl;
+	cin>>flight_number;
+	system("cls");
+	manager.search_ticket_by_flight_number(flight_number);
+	_getch();
 }

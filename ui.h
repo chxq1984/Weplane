@@ -12,20 +12,23 @@ public:
 	int main_width,main_height;
 	UI();
 	void main_window();
-	void default_setting();//åˆå§‹åŒ–
+	void default_setting();//³õÊ¼»¯
 	void header();
 	void footer();
-	void login_customer();//ç”¨æˆ·ç™»å½•
-	void register_customer();//ç”¨æˆ·æ³¨å†Œ
-	char customer_login_choose();//ç™»å½•ä¸»ç•Œé¢
-	char choose_login();//åˆ¤æ–­ç™»å½•å¯¹è±¡
-	char choose_buy_cancel();//åˆ¤æ–­æ˜¯ä¹°ç¥¨è¿˜æ˜¯é€€ç¥¨
-	void buying_ticket();//ä¹°ç¥¨
-	void cancel_ticket();//é€€ç¥¨
-	void login_administor();//ç®¡ç†å‘˜ç™»å½•
-	char administor_operator();//ç®¡ç†å‘˜æ“ä½œ
-	void add_flight();//å¢åŠ èˆªç­
-	void deny_flight();//èˆªç­å»¶è¯¯
-	void cancel_flight();//èˆªç­å–æ¶ˆ
-	void fly_flight();//èˆªç­èµ·é£
+	void login_customer();//ÓÃ»§µÇÂ¼
+	void register_customer();//ÓÃ»§×¢²á
+	char customer_login_choose();//µÇÂ¼Ö÷½çÃæ
+	char choose_login();//ÅĞ¶ÏµÇÂ¼¶ÔÏó
+	char choose_buy_cancel();//ÅĞ¶ÏÊÇÂòÆ±»¹ÊÇÍËÆ±
+	void buying_ticket();//ÂòÆ±
+	void cancel_ticket();//ÍËÆ±
+	void login_administor();//¹ÜÀíÔ±µÇÂ¼
+	char administor_operator();//¹ÜÀíÔ±²Ù×÷
+	void add_flight();//Ôö¼Óº½°à
+	void deny_flight();//º½°àÑÓÎó
+	void cancel_flight();//º½°àÈ¡Ïû
+	void fly_flight();//º½°àÆğ·É
+	void search_flight_info();
+	void search_flight_info_by_city();
+	void search_flight_info_by_flight_number();
 };

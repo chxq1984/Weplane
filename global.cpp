@@ -1,11 +1,12 @@
 #pragma once
 #include "global.h"
 #include <fstream>
+#include <iostream>
 map<string,int> info_map;
 void make_info_map()
 {
-	info_map["鍖椾含/骞垮窞"] = 1;
-	info_map["涓婃捣/绂忓窞"] = 2;
+	info_map["北京/广州"] = 1;
+	info_map["上海/福州"] = 2;
 }
 int global_transform(string departure,string destination)
 {
