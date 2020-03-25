@@ -7,7 +7,9 @@
 #include "global.h"
 #include "customer_info.h"
 #include "file.h"
-
+#include <vector>
+#include "sort.h"
+#include <conio.h>
 using namespace std;
 class flight_time_node
 {
@@ -19,6 +21,7 @@ public:
 class flight_information
 {
 public:
+	Sort* sort_manager;//对用户查询结果进行排序
 	file_manage* file_manager;
 	customer_info customers;//用户信息管理类
 	list<flight_time_node*> flight_time_chain;
@@ -39,4 +42,5 @@ public:
 	void search_ticket_by_city(string departure,string destination);
 	void search_ticket_by_flight_number(string flight_number);
 	void show_ticket_info(flight_information_node *target);
+	void sort_flight_info(vector<flight_information_node*>& flight_info);
 };

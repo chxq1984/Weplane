@@ -583,21 +583,25 @@ void flight_information::search_ticket_by_city(string departure,string destinati
 {
 	int data = global_transform(departure,destination);
 	list<flight_time_node*>::iterator iter = flight_time_chain.begin();
+	vector<flight_information_node*> flight_store;
 	for(;iter!=flight_time_chain.end();iter++)
 	{
 		list<flight_information_node*>data_list = (*iter)->tree->find_info_list(data);
 		list<flight_information_node*>::iterator iter_data_list;
 		for(iter_data_list=data_list.begin();iter_data_list!=data_list.end();iter_data_list++)
 		{
-
-			show_ticket_info(*iter_data_list);
-			cout<<endl;
+			//show_ticket_info(*iter_data_list);
+			//cout<<endl;
+			flight_store.push_back((*iter_data_list));
 		}
 	}
+	sort_flight_info(flight_store);
+	
 }
 void flight_information::search_ticket_by_flight_number(string flight_number)
 {//底层遍历
 	list<flight_time_node*>::iterator iter = flight_time_chain.begin();
+	vector<flight_information_node*> flight_store;
 	for(;iter!=flight_time_chain.end();iter++)
 	{
 		node *root = (*iter)->tree->root;
@@ -615,11 +619,44 @@ void flight_information::search_ticket_by_flight_number(string flight_number)
 				{
 					if((*iter_flight)->flight_number == flight_number)
 					{
-						show_ticket_info(*iter_flight);
-						cout<<endl;
+						/*show_ticket_info(*iter_flight);
+						cout<<endl;*/
+						flight_store.push_back(*iter_flight);
 					}
 				}
 			}
 		}
+	}
+	sort_flight_info(flight_store);
+}
+void flight_information::sort_flight_info(vector<flight_information_node*>& flight_info)
+{
+	cout<<"请输入您所想要进行的排序方式:"<<endl;
+	cout<<"1.按票价排序"<<endl;
+	cout<<"2.按飞行时间排序"<<endl;
+	cout<<"3.按剩余票数排序"<<endl;
+	int *link;
+	char sort_type;
+	sort_type = _getch();
+	switch(sort_type)
+	{
+		case '1':
+			sort_manager = new sort_by_price;
+			break;
+		case '2':
+			sort_manager = new sort_by_time;
+			break;
+		case '3':
+			sort_manager = new sort_by_remain_number;
+			break;
+	}
+	link = sort_manager->tosort(flight_info);
+	int p = sort_manager->entrance;
+	while(p)
+	{
+		//cout<<data[p]<<" ";
+		show_ticket_info(flight_info[p-1]);
+		cout<<endl;
+		p = sort_manager->link[p];
 	}
 }
