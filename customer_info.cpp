@@ -15,6 +15,12 @@ void customer_info::create_account()
 	customer_info_node *new_customer = new customer_info_node;
 	new_customer->load_data(account_number);
 	tree->insert_customer_info(new_customer);
+
+	ofstream fout("customer_info.in",ios::app);
+	fout<<account_number<<endl;
+	fout.close();
+
+	login_account = account_number;//表示登录账号
 }
 customer_info_node* customer_info::search_customer_info(unsigned int account)
 {
@@ -42,16 +48,24 @@ void customer_info::login()
 }
 void customer_info::get_info_from_file()
 {
+	int is_file_empty = isfile_empty("customer_info.in");
+	if(is_file_empty)
+	{
+		account = 10000;
+		return;
+	}
 	ifstream customer_info;
     customer_info.open("customer_info.in", ios::in);
     while (!customer_info.eof())
 	{
 		unsigned int account_number;
 		customer_info>>account_number;
+		account = account_number;
 		customer_info_node *new_customer = new customer_info_node;
 		new_customer->load_data(account_number);
 		tree->insert_customer_info(new_customer);
 	}
 	customer_info.close();
-	login_account = 100000;//默认测试账号,模拟登录以跳过登录操作,方便调试
+	account++;
+	//login_account = 100000;//默认测试账号,模拟登录以跳过登录操作,方便调试
 }

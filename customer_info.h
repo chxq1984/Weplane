@@ -3,6 +3,7 @@
 #include "b_plus_tree_customer.h"
 #include "global.h"
 #include "code.h"
+#include <fstream>
 class customer_info
 {
 public:

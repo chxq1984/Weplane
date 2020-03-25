@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include <iostream>
 #include <list>
@@ -7,6 +7,8 @@
 #include "global.h"
 #include "customer_info.h"
 #include "file.h"
+#include "ui.h"
+
 using namespace std;
 class flight_time_node
 {
@@ -35,13 +37,15 @@ public:
 	void solve_change_ticket(flight_information_node*flight_node);//更换机票更新信息
 	void cancel_flight(string departure_start_time,string departure,string destination,string flight_number);//飞机取消
 	void plane_fly(string departure_start_time,string departure,string destination,string flight_number);//飞机起飞信息更新
-};
-int main()
+};*/
+/*int main()
 {
-	make_info_map();//初始化map
+	UI ui;
+	ui.main_window();*/
+	/*make_info_map();//初始化map
 	flight_information test;
 	test.get_info_from_file();
-	test.customers.get_info_from_file();
+	test.customers.get_info_from_file();*/
 	
 	/*string data="100000";
 	test.file_manager = new notice_file();
@@ -49,11 +53,11 @@ int main()
 	//test.buy_ticket();
 	//test.customers.login();
 	//test.buy_ticket();
-	string departure_start_time="2020/03/18/20:00";
+	/*string departure_start_time="2020/03/18/20:00";
 	string departure="北京";
 	string destination="广州";
 	string flight_number="1111";
-	test.plane_fly(departure_start_time,departure,destination,flight_number);
+	test.plane_fly(departure_start_time,departure,destination,flight_number);*/
 	//test.notice_flight();
 	//test.cancel_ticket();
 	/*
@@ -64,7 +68,8 @@ int main()
 	//customers.login();
 	/*customers.create_account();
 	customers.search_customer_info(100000);*/
-}
+//}
+#include "flight_information.h"
 flight_time_node::flight_time_node(string time)
 {
 	tree = new b_plus_tree(level);
@@ -216,6 +221,11 @@ void flight_information::buy_ticket()
 	int number = 1;
 	string position = departure+"/"+destination;
 	int data = info_map[position];
+	if(!data)
+	{
+		cout<<"暂无"<<departure_time<<"航班相关信息";
+		return;
+	}
 	list<flight_information_node*> info_list = target_day->tree->find_info_list(data);
 	cout<<"航班信息:"<<endl;
 	for(list<flight_information_node*>::iterator iter = info_list.begin();iter != info_list.end();iter++)  
