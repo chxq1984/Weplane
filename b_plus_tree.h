@@ -47,8 +47,12 @@ public:
 	b_plus_tree(int n);
 	int level;//定义b+树的阶数
 	node *root;
+	flight_information_node* info_temp;//用于转移
+	list<flight_information_node*> none;//find_info_list没有找到数据时返回此list
 	void insert_flight_info(flight_information_node*info);//插入航班信息
+	void sort_flight_info(node* target);
 	list<flight_information_node*>& find_info_list(int data);//根据data查找对应的list
+	void copy_flight_list(node* pre,int p_index,node* bac,int b_index);//将pre下的list转移至bac
 	void insert(int data);
 	node **find_position(int data,node *target,node *father);//寻找要插入的位置，返回比data小的上一个node的位置，返回值[0]:target,[1]:father
 	void split_node(node*& target,node*&father,int data);//将target结点分裂

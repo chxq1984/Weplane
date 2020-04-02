@@ -43,4 +43,5 @@ public:
 	void search_ticket_by_flight_number(string flight_number);
 	void show_ticket_info(flight_information_node *target);
 	void sort_flight_info(vector<flight_information_node*>& flight_info);
+	void forDebug_run();//用于遍历整个链，仅用于debug
 };

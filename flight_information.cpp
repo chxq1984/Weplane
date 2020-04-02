@@ -185,7 +185,6 @@ void flight_information::get_info_from_file()
 		flight_info >> remain_number_vip;
 		flight_info>>price_normal;
 		flight_info>>price_vip;
-
 		flight_time_node* target = find_node_by_data(departure_start_time.substr(0,10));
 		if(!target)
 		{
@@ -200,6 +199,7 @@ void flight_information::get_info_from_file()
 		target->tree->insert_flight_info(information_node);
 	}
 	flight_info.close();
+	//forDebug_run();
 }
 void flight_information::buy_ticket()
 {
@@ -353,6 +353,7 @@ void flight_information::cancel_ticket()
 	{//未起飞，执行退票操作
 		int type = (*iter)->ticket_type;
 		target_flight->buying_customer.remove(login_account);//删除已购票信息
+		customer->ticket_info_list.remove((*iter));//删除用户已购票信息
 		if(type == 1 && target_flight->appointment_normal.size())//客舱,有预约
 		{
 			unsigned int account = target_flight->appointment_normal.front();
@@ -562,7 +563,7 @@ void flight_information::show_ticket_info(flight_information_node *target)
 	if(target->stop != "")
 	{
 		is_has_stop = 1;
-		cout<<"经停地:"<<target->stop;
+		cout<<"经停地:"<<target->stop<<endl;
 	}
 	cout<<"目的地:"<<target->destination<<endl;
 	cout<<"起飞时间:"<<target->departure_start_time<<endl;
@@ -587,6 +588,8 @@ void flight_information::search_ticket_by_city(string departure,string destinati
 	for(;iter!=flight_time_chain.end();iter++)
 	{
 		list<flight_information_node*>data_list = (*iter)->tree->find_info_list(data);
+		if(!data_list.size())
+			continue;
 		list<flight_information_node*>::iterator iter_data_list;
 		for(iter_data_list=data_list.begin();iter_data_list!=data_list.end();iter_data_list++)
 		{
@@ -659,4 +662,30 @@ void flight_information::sort_flight_info(vector<flight_information_node*>& flig
 		cout<<endl;
 		p = sort_manager->link[p];
 	}
+}
+void flight_information::forDebug_run()
+{
+	list<flight_time_node*> ::iterator iter;
+	for (iter = flight_time_chain.begin();iter != flight_time_chain.end();iter++)
+	{
+		cout << (*iter)->departure_time << endl;
+		node *temp = (*iter)->tree->root;
+		for(;temp->point[0];temp=temp->point[0]);//寻找叶结点始端
+		int i=0;//debug
+		for(;temp;temp=temp->right)
+		{
+			cout<<i++<<":"<<endl;//debug
+			for(int m=0;m<temp->position;m++)
+			{
+				cout<<temp->index[m]<<endl;
+				list<flight_information_node*>temp_list = temp->info_list[m];
+				list<flight_information_node*>::iterator iter;
+				for(iter=temp_list.begin();iter!=temp_list.end();iter++)
+				{
+					cout<<(*iter)->departure<<" "<<(*iter)->destination<<" "<<global_transform((*iter)->departure,(*iter)->destination)<<endl;
+				}
+			}
+		}
+	}
+	_getch();
 }

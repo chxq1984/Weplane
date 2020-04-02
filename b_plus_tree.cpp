@@ -77,12 +77,33 @@ node **b_plus_tree::find_position(int data,node *target,node *father)
 void b_plus_tree::split_node(node*& target,node*&father,int data)
 {
 	int last_data = data;//多出的那个数
+	list<flight_information_node*> temp_list;//#
+	list<flight_information_node*>::iterator iter;//#
 	node *up=father,*right;
 	if(target->index[target->position-1] > data)//进行排序，将最大值提出至last_data
 	{
 		last_data = target->index[target->position-1];
 		insert_sort(data,target->index,level-2);
+		for(iter=target->info_list[level-2].begin();iter!=target->info_list[level-2].end();iter++)//#
+		{
+			temp_list.push_back((*iter));
+		}
+		target->info_list[level-2].clear();//#
+		sort_flight_info(target);//#
+		int m;//#
+		for(m=0;m<target->position;m++)//#
+		{
+			if(target->index[m] == data)
+				break;
+		}	
+		target->info_list[m].push_back(info_temp);//#
 	}
+	else
+	{
+		temp_list.push_back(info_temp);//#
+	}
+
+	
 	right = new node(level);
 	right->right = target->right;//横向连入结点
 	target->right = right;
@@ -131,8 +152,14 @@ void b_plus_tree::split_node(node*& target,node*&father,int data)
 	}
 	for(int m=0;m<level-mid-1;m++)//将target后半部分转至right
 	{
+		copy_flight_list(target,mid+m,right,right->position);//转移flight_list
+
 		right->index[right->position++] = target->index[mid+m];
 		target->index[mid+m] = 0;//还原为默认值0
+	}
+	for(iter=temp_list.begin();iter!=temp_list.end();iter++)//#
+	{
+		right->info_list[right->position].push_back((*iter));
 	}
 	right->index[right->position++] = last_data;
 	target->position = level/2;//维护position
@@ -145,6 +172,9 @@ void b_plus_tree::insert(int data)
 		int position = root->position;
 		root->index[position] = data;
 		root->position++;
+
+		root->info_list[0].push_back(info_temp);//#
+
 		return;
 	}
 	node **target_father = find_position(data,root,NULL);
@@ -154,12 +184,28 @@ void b_plus_tree::insert(int data)
 	if(exist != -1)
 	{
 		//插入值相同，若要操作在此处进行即可
+		int m;//#
+		for (m = 0;m < target->position;m++)//#
+		{
+			if (target->index[m] == data)
+				break;
+		}
+		target->info_list[m].push_back(info_temp);//#
 		return;
 	}
 	if(target -> position != level-1)//未满,直接插入即可
 	{
 		insert_sort(data,target->index,target->position);
 		target->position++;
+
+		sort_flight_info(target);//对flight_info位置重置
+		int m;
+		for(m=0;m<target->position;m++)
+		{
+			if(target->index[m] == data)
+				break;
+		}	
+		target->info_list[m].push_back(info_temp);
 		return;
 	}
 	else//已满，需要分裂
@@ -591,16 +637,18 @@ void b_plus_tree::insert_flight_info(flight_information_node*info)
 {
 	string index = info->departure+"/"+info->destination;
 	int data = info_map[index];
+	info_temp = info;
 	insert(data);
-	node **target_father = find_position(data,root,NULL);
+	/*node **target_father = find_position(data,root,NULL);
 	node *target = target_father[0];
+
 	int m;
 	for(m=0;m<target->position;m++)
 	{
 		if(target->index[m] == data)
 			break;
-	}
-	target->info_list[m].push_back(info);
+	}	
+	target->info_list[m].push_back(info);*/
 }
 list<flight_information_node*>& b_plus_tree:: find_info_list(int data)
 {
@@ -611,5 +659,36 @@ list<flight_information_node*>& b_plus_tree:: find_info_list(int data)
 		if(target->index[m] == data)
 			break;
 	}
+	if(m == target->position)//说明没找到
+		return none;
 	return target->info_list[m];
+}
+
+void b_plus_tree::copy_flight_list(node* pre,int p_index,node* bac,int b_index)
+{
+	bac->info_list[b_index].clear();
+	list<flight_information_node*>::iterator iter;
+	for (iter = pre->info_list[p_index].begin();iter != pre->info_list[p_index].end();iter++)
+	{
+		bac->info_list[b_index].push_back((*iter));
+	}
+	pre->info_list[p_index].clear();
+}
+void b_plus_tree::sort_flight_info(node* target)
+{
+	if(target->position == 1)
+		return;
+	//cout<<target->position<<" ";
+	int m;
+	for(m=0;m<target->position-1;m++)//position=3
+	{
+		int index = target->index[m];
+		int data = global_transform(target->info_list[m].front()->departure,target->info_list[m].front()->destination);
+		if(index != data)
+			break;
+	}	
+	for(int n=target->position-1;n>m;n--)//n:2~
+	{
+		copy_flight_list(target,n-1,target,n);//m=1 n=3 3=2 2=1 
+	}
 }
