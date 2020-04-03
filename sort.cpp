@@ -92,17 +92,17 @@ int Sort::get_flytime(string start,string end)
 	int s_month = stoi(start.substr(5,2));
 	int s_day = stoi(start.substr(8,2));
 	int s_hour = stoi(start.substr(11,2));
-	int s_minute = stoi(start.substr(15,2));
+	int s_minute = stoi(start.substr(14,2));
 	unsigned int s_time = (s_year-20)*minute_year+(s_month-1)*minute_month+(s_day-1)*60*24+s_hour*60+s_minute;
 
-	int e_year = stoi(end.substr(0,4));
+	int e_year = stoi(end.substr(2,2));
 	int e_month = stoi(end.substr(5,2));
 	int e_day = stoi(end.substr(8,2));
 	int e_hour = stoi(end.substr(11,2));
-	int e_minute = stoi(end.substr(15,2));
+	int e_minute = stoi(end.substr(14,2));
 	unsigned int e_time = (e_year-20)*minute_year+(e_month-1)*minute_month+(e_day-1)*60*24+e_hour*60+e_minute;
-
 	int minute = e_time-s_time;
+
 	return minute;
 }
 int* sort_by_time::tosort(vector<flight_information_node*>& sort_flight_info)
@@ -129,4 +129,29 @@ int* sort_by_remain_number::tosort(vector<flight_information_node*>& sort_flight
 	link = new int[number+1]();
 	merge_sort(1,number,entrance);
 	return link;
+}
+int Sort::time_compare(string time_one,string time_two)//若time_one小于time_two则返回1,等于返回2，大于返回3
+{
+	int minute_year = 60*24*365;//一年几分钟
+	int minute_month = 60*24*31;
+	int one_year = stoi(time_one.substr(2,2));
+	int one_month = stoi(time_one.substr(5,2));
+	int one_day = stoi(time_one.substr(8,2));
+	int one_hour = stoi(time_one.substr(11,2));
+	int one_minute = stoi(time_one.substr(14,2));
+	unsigned int one_time = (one_year-20)*minute_year+(one_month-1)*minute_month+(one_day-1)*60*24+one_hour*60+one_minute;
+
+	int two_year = stoi(time_two.substr(2,2));
+	int two_month = stoi(time_two.substr(5,2));
+	int two_day = stoi(time_two.substr(8,2));
+	int two_hour = stoi(time_two.substr(11,2));
+	int two_minute = stoi(time_two.substr(14,2));
+	unsigned int two_time = (two_year-20)*minute_year+(two_month-1)*minute_month+(two_day-1)*60*24+ two_hour*60+ two_minute;
+
+	if(one_time < two_time)
+		return 1;
+	else if(one_time == two_time)
+		return 2;
+	else 
+		return 3;
 }

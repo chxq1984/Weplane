@@ -28,6 +28,7 @@ public:
 	void deny_flight();//º½°àÑÓÎó
 	void cancel_flight();//º½°àÈ¡Ïû
 	void fly_flight();//º½°àÆğ·É
+	void flight_recommend();//º½°àÍÆ¼ö
 	void search_flight_info();
 	void search_flight_info_by_city();
 	void search_flight_info_by_flight_number();

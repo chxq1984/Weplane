@@ -1,74 +1,3 @@
-/*#pragma once
-
-#include <iostream>
-#include <list>
-#include <fstream>
-#include "b_plus_tree.h"
-#include "global.h"
-#include "customer_info.h"
-#include "file.h"
-#include "ui.h"
-
-using namespace std;
-class flight_time_node
-{
-public:
-	string departure_time;//起飞时间
-	b_plus_tree *tree;
-	flight_time_node(string time);
-};
-class flight_information
-{
-public:
-	file_manage* file_manager;
-	customer_info customers;//用户信息管理类
-	list<flight_time_node*> flight_time_chain;
-	list<flight_information_node*>delay_list;//延误航班信息列表
-	void insert_flight_info();
-	flight_time_node* find_node_by_data(string data);//寻找日期所在的节点
-	void get_info_from_file();//从文件中获取已存航班信息，仅debug使用
-	void buy_ticket();//购票
-	void solve_buying_info(flight_information_node* flight_info,int position_type);//处理购票时的信息更新,type:1:普通购票,2:换票
-	void cancel_ticket();//退票
-	flight_information_node* check_whether_fly(string departure_start_time,string departure,string destination,string flight_number);//此函数也可用于返回航班信息节点
-	//判断是否已经起飞，注：待改进！！改进方向：飞机可能延迟起飞导致起飞时间对不上
-	void delay_flight(string departure_start_time,string departure,string destination,string flight_number,int delay_minute);//飞机延迟
-	void notice_flight();//通知飞机延误/取消
-	void solve_change_ticket(flight_information_node*flight_node);//更换机票更新信息
-	void cancel_flight(string departure_start_time,string departure,string destination,string flight_number);//飞机取消
-	void plane_fly(string departure_start_time,string departure,string destination,string flight_number);//飞机起飞信息更新
-};*/
-/*int main()
-{
-	UI ui;
-	ui.main_window();*/
-	/*make_info_map();//初始化map
-	flight_information test;
-	test.get_info_from_file();
-	test.customers.get_info_from_file();*/
-	
-	/*string data="100000";
-	test.file_manager = new notice_file();
-	test.file_manager->delete_file(1,data);*/
-	//test.buy_ticket();
-	//test.customers.login();
-	//test.buy_ticket();
-	/*string departure_start_time="2020/03/18/20:00";
-	string departure="北京";
-	string destination="广州";
-	string flight_number="1111";
-	test.plane_fly(departure_start_time,departure,destination,flight_number);*/
-	//test.notice_flight();
-	//test.cancel_ticket();
-	/*
-	//test.insert_flight_info();
-	test.get_info_from_file();
-	test.search_flight_info();*/
-	//customer_info customers;
-	//customers.login();
-	/*customers.create_account();
-	customers.search_customer_info(100000);*/
-//}
 #include "flight_information.h"
 flight_time_node::flight_time_node(string time)
 {
@@ -688,4 +617,131 @@ void flight_information::forDebug_run()
 		}
 	}
 	_getch();
+}
+void flight_information::recommend_ticket(string departure,string destination)
+{
+	vector<input_data*> route;
+	vector<string> shortest_route;//存储最短路线
+	find_shortest short_manager;
+	list<flight_time_node*> ::iterator iter;
+	for (iter = flight_time_chain.begin();iter != flight_time_chain.end();iter++)//遍历时间
+	{
+		node *temp = (*iter)->tree->root;
+		for(;temp->point[0];temp=temp->point[0]);//找到树底部的头结点
+		for(;temp;temp=temp->right)
+		{
+			for(int m=0;m<temp->position;m++)
+			{
+				flight_information_node* temp_info = temp->info_list[m].front();
+				input_data* input_temp = get_route_info(temp_info);
+				route.push_back(input_temp);
+			}
+		}
+	}
+	short_manager.build(name_map.size(),route);
+	int x = name_map[departure];
+	int y = name_map[destination];
+	shortest_route.push_back(departure);
+	stack<int>* route_stack = short_manager.Dijkstra(x,y);
+	while(route_stack->size())
+	{
+		int city_code = route_stack->top();
+		map<string, int>::iterator iter = name_map.begin();
+		for(;iter!=name_map.end();iter++)
+		{
+			if(iter->second == city_code)
+			{
+				shortest_route.push_back(iter->first);
+				break;
+			}
+		}
+		route_stack->pop();
+	}
+	solve_recommend_ticket(shortest_route);
+	
+}
+input_data* flight_information:: get_route_info(flight_information_node *target)
+{//权重计算即为票价+飞行分钟数
+	int weight;
+	string departure = target->departure;
+	string destination = target->destination;
+	float price = target->price_normal;
+	string departure_time = target->departure_start_time;
+	string destination_time = target->destination_arrive_time;
+	int fly_time = sort_manager->get_flytime(departure_time,destination_time);
+	weight = price+fly_time;
+
+	input_data* input_temp = new input_data;
+	input_temp->from = name_map[departure];
+	input_temp->wei = weight;
+	input_temp->to = name_map[destination];
+
+	return input_temp;
+
+}
+void flight_information:: solve_recommend_ticket(vector<string> shortest_route)
+{
+	//vector<string> time_store;
+	queue<flight_information_node*> temp_store;//暂时存储
+	queue<flight_information_node*> info_store;//存储着所有两个城市的航班信息
+	for(int m=0;m<shortest_route.size()-1;m++)
+	{
+		string departure = shortest_route[m];
+		string destination = shortest_route[m+1];
+		int data = global_transform(departure,destination);
+		list<flight_time_node*>::iterator iter = flight_time_chain.begin();
+		for(;iter!=flight_time_chain.end();iter++)
+		{
+			list<flight_information_node*>data_list = (*iter)->tree->find_info_list(data);
+			if(!data_list.size())
+				continue;
+			list<flight_information_node*>::iterator iter_data_list;
+			for(iter_data_list=data_list.begin();iter_data_list!=data_list.end();iter_data_list++)
+			{
+				info_store.push((*iter_data_list));
+			}
+		}
+	}
+	cout<<"请选择您认为合适的出发时间:"<<endl;
+	int type;
+	int i = 1;
+	string departure = info_store.front()->departure;
+	while(info_store.front()->departure == departure)
+	{
+		temp_store.push(info_store.front());
+		cout<<i++<<": "<<info_store.front()->departure_start_time<<endl<<endl;
+		info_store.pop();
+	}
+	cin>>type;
+	for(int m=0;m<type-1;m++)
+		temp_store.pop();
+	flight_information_node * target = temp_store.front();
+	temp_store = queue<flight_information_node*>();
+	temp_store.push(target);
+	string time_one = target->destination_arrive_time;
+	while(!info_store.empty())
+	{
+		string departure = info_store.front()->departure;
+		while(!info_store.empty() && info_store.front()->departure == departure)
+		{
+			flight_information_node *target_two = info_store.front();
+			info_store.pop();
+			string time_two = target_two->departure_start_time;
+			if(sort_manager->time_compare(time_one,time_two) == 1)//后一航班时间晚于前一航班，则可以选择
+			{
+				temp_store.push(target_two);
+				while(!info_store.empty() && info_store.front()->departure == departure)//清空此地点的所有其他航班信息
+				{
+					info_store.pop();
+				}
+			} 
+		}
+	}
+	while(!temp_store.empty())
+	{
+		show_ticket_info(temp_store.front());
+		cout<<endl;
+		temp_store.pop();
+	}
+
 }

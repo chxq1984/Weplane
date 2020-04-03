@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 map<string,int> info_map;
+map<string,int> name_map;
 void make_info_map()
 {
 	info_map["重庆/福州"] = 1;
@@ -72,6 +73,28 @@ void make_info_map()
 	info_map["大连/北京"] = 65;
 	info_map["南京/长春"] = 66;
 	info_map["杭州/三亚"] = 67;
+
+	name_map["三亚"] = 1;
+	name_map["西安"] = 2;
+	name_map["南京"] = 3;
+	name_map["澳门"] = 4;
+	name_map["丽江"] = 5;
+	name_map["昆明"] = 6;
+	name_map["银川"] = 7;
+	name_map["合肥"] = 8;
+	name_map["张家界"] = 9;
+	name_map["福州"] = 10;
+	name_map["台州"] = 11;
+	name_map["杭州"] = 12;
+	name_map["大理"] = 13;
+	name_map["郑州"] = 14;
+	name_map["重庆"] = 15;
+	name_map["海口"] = 16;
+	name_map["成都"] = 17;
+	name_map["上海"] = 18;
+	name_map["北京"] = 19;
+	name_map["大连"] = 20;
+	name_map["长春"] = 21;
 }
 int global_transform(string departure,string destination)
 {

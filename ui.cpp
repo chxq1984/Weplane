@@ -72,6 +72,8 @@ void UI::main_window()
 					case '3':
 						search_flight_info();//票务查询
 						break;
+					case '4':
+						flight_recommend();//航班推荐
 					case 'q':
 						is_exit_inner = 1;
 						break;
@@ -163,6 +165,9 @@ char UI::choose_buy_cancel()
 	for(int m=0;m<main_width/2+5;m++)
 		cout<<" ";
 	cout<<"3.票务查询"<<endl<<endl;
+	for(int m=0;m<main_width/2+5;m++)
+		cout<<" ";
+	cout<<"4.航班推荐"<<endl<<endl;
 	footer();
 	char choose;
 	choose = _getch();
@@ -311,5 +316,17 @@ void UI::search_flight_info_by_flight_number()
 	cin>>flight_number;
 	system("cls");
 	manager.search_ticket_by_flight_number(flight_number);
+	_getch();
+}
+void UI::flight_recommend()
+{
+	system("cls");
+	string departure,destination;
+	cout<<"请输入出发地:"<<endl;
+	cin>>departure;
+	cout<<"请输入目的地:"<<endl;
+	cin>>destination;
+	system("cls");
+	manager.recommend_ticket(departure,destination);
 	_getch();
 }

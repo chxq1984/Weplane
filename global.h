@@ -2,10 +2,11 @@
 #include <map>
 #include <string>
 using namespace std;
-extern map<string,int> info_map;//æ ¹æ®èµ·å§‹åœ°ä¸å‡ºå‘åœ°åˆ›å»ºçš„map
-void make_info_map();//åˆ›å»ºmap
-int global_transform(string departure,string destination);//è½¬åŒ–å­—å…¸
-const int level=5;//b+æ ‘çš„level
-extern unsigned int account;//è´¦å·å€¼
-extern unsigned int login_account;//å½“å‰ç™»å½•çš„ç”¨æˆ·è´¦å·
-int isfile_empty(string file_name);//åˆ¤æ–­æ–‡ä»¶æ˜¯å¦ä¸ºç©º
+extern map<string,int> info_map;//¸ù¾İÆğÊ¼µØÓë³ö·¢µØ´´½¨µÄmap
+extern map<string,int> name_map;//¸ù¾İµØµãÃûµÃµ½id
+void make_info_map();//´´½¨map
+int global_transform(string departure,string destination);//×ª»¯×Öµä
+const int level=5;//b+Ê÷µÄlevel
+extern unsigned int account;//ÕËºÅÖµ
+extern unsigned int login_account;//µ±Ç°µÇÂ¼µÄÓÃ»§ÕËºÅ
+int isfile_empty(string file_name);//ÅĞ¶ÏÎÄ¼şÊÇ·ñÎª¿Õ

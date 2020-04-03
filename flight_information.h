@@ -10,6 +10,7 @@
 #include <vector>
 #include "sort.h"
 #include <conio.h>
+#include "recommend.h"
 using namespace std;
 class flight_time_node
 {
@@ -44,4 +45,7 @@ public:
 	void show_ticket_info(flight_information_node *target);
 	void sort_flight_info(vector<flight_information_node*>& flight_info);
 	void forDebug_run();//用于遍历整个链，仅用于debug
+	void recommend_ticket(string departure,string destination);//推荐路线
+	input_data* get_route_info(flight_information_node *target);//得到路径信息，用于推荐路径
+	void solve_recommend_ticket(vector<string> shortest_route);
 };

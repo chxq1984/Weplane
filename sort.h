@@ -15,6 +15,7 @@ public:
 	void merge_sort(int low,int high,int &p);
 	void insertSort(int pre,int bac,int &ret);
 	int get_flytime(string start,string end);//获取飞行时间,返回分钟
+	int time_compare(string time_one,string time_two);//若time_one小于time_two则返回1,等于返回2，大于返回3
 };
 class sort_by_price:public Sort//根据normal_price进行排序
 {
